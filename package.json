@@ -1,0 +1,14 @@
+{
+  "name": "hancer-homepage",
+  "version": "1.0.0",
+  "description": "Personal academic homepage for Dr. Murat Hancer",
+  "scripts": {
+    "update-citations": "node update-citations.js"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0"
+  },
+  "devDependencies": {},
+  "author": "Dr. Murat Hancer",
+  "license": "MIT"
+}

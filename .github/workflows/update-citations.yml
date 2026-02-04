@@ -1,0 +1,35 @@
+name: Update Citations
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC (4:00 AM EST)
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-citations:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: |
+          npm install
+          npx playwright install chromium
+          
+      - name: Update citations
+        run: npm run update-citations
+        
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name 'Citation Bot'
+          git config --global user.email 'bot@hancer.org'
+          git add index.html citation-update-log.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update citation metrics [automated]" && git push)

@@ -241,11 +241,16 @@ h4 {
 }
 
 /* Scroll Indicator */
-.scroll-indicator {
+.scroll-indicator-link {
     position: absolute;
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.scroll-indicator {
     animation: bounce 2s infinite;
 }
 

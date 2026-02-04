@@ -1,9 +1,6 @@
 # Ignore node modules
 node_modules/
 
-# Ignore citation update log
-citation-update-log.json
-
 # Ignore OS files
 .DS_Store
 Thumbs.db

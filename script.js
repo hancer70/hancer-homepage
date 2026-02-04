@@ -20,8 +20,8 @@ function animateCounter(element) {
 
 // Intersection Observer for animations
 const observerOptions = {
-    threshold: 0.2,
-    rootMargin: '0px 0px -100px 0px'
+    threshold: 0.05, // Changed from 0.2 to 0.05 for better mobile experience
+    rootMargin: '0px' // Removed negative margin to show content sooner
 };
 
 const observer = new IntersectionObserver((entries) => {

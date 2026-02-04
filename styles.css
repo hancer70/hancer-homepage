@@ -137,7 +137,6 @@ h4 {
     object-fit: cover;
     border: 4px solid rgba(183, 65, 14, 0.25);
     box-shadow: var(--shadow-lg);
-    animation: float 6s ease-in-out infinite;
     position: relative;
     z-index: 2;
 }

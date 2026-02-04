@@ -5,9 +5,7 @@
   "scripts": {
     "update-citations": "node update-citations.js"
   },
-  "dependencies": {
-    "playwright": "^1.40.0"
-  },
+  "dependencies": {},
   "devDependencies": {},
   "author": "Dr. Murat Hancer",
   "license": "MIT"

@@ -1,46 +1,37 @@
-const playwright = require('playwright');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
 async function updateCitations() {
-    console.log('Starting citation update...');
+    console.log('Starting citation update with SerpApi...');
 
-    const browser = await playwright.chromium.launch({ headless: true });
-    const page = await browser.newPage();
+    const apiKey = process.env.SERPAPI_KEY;
+    if (!apiKey) {
+        console.error('Error: SERPAPI_KEY environment variable not set');
+        process.exit(1);
+    }
+
+    const scholarId = 'oAwWBRYAAAAJ';
+    const url = `https://serpapi.com/search.json?engine=google_scholar_author&author_id=${scholarId}&api_key=${apiKey}`;
+
+    console.log('Fetching data from SerpApi...');
 
     try {
-        // Navigate to Google Scholar profile
-        const scholarUrl = 'https://scholar.google.com/citations?user=oAwWBRYAAAAJ&hl=en';
-        console.log(`Fetching data from: ${scholarUrl}`);
+        const data = await fetchData(url);
+        const result = JSON.parse(data);
 
-        await page.goto(scholarUrl, { waitUntil: 'networkidle' });
-
-        // Wait for the page to load
-        await page.waitForSelector('#gsc_rsb_st', { timeout: 10000 });
+        if (result.error) {
+            console.error('SerpApi Error:', result.error);
+            process.exit(1);
+        }
 
         // Extract citation metrics
-        const metrics = await page.evaluate(() => {
-            const rows = document.querySelectorAll('#gsc_rsb_st tbody tr');
-            const data = {};
-
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                if (cells.length >= 2) {
-                    const label = cells[0].textContent.trim();
-                    const value = cells[1].textContent.trim();
-
-                    if (label === 'Citations') {
-                        data.citations = parseInt(value.replace(/,/g, ''));
-                    } else if (label === 'h-index') {
-                        data.hIndex = parseInt(value);
-                    } else if (label === 'i10-index') {
-                        data.i10Index = parseInt(value);
-                    }
-                }
-            });
-
-            return data;
-        });
+        const citedBy = result.cited_by || {};
+        const metrics = {
+            citations: citedBy.table?.[0]?.citations?.all || 0,
+            hIndex: citedBy.table?.[1]?.h_index?.all || 0,
+            i10Index: citedBy.table?.[2]?.i10_index?.all || 0
+        };
 
         console.log('Extracted metrics:', metrics);
 
@@ -49,19 +40,16 @@ async function updateCitations() {
         let htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
         // Update the metrics in the HTML
-        // Update citations
         htmlContent = htmlContent.replace(
             /<div class="metric-value" data-target="\d+" data-metric="citations">0<\/div>/,
             `<div class="metric-value" data-target="${metrics.citations}" data-metric="citations">0</div>`
         );
 
-        // Update h-index
         htmlContent = htmlContent.replace(
             /<div class="metric-value" data-target="\d+" data-metric="h-index">0<\/div>/,
             `<div class="metric-value" data-target="${metrics.hIndex}" data-metric="h-index">0</div>`
         );
 
-        // Update i10-index
         htmlContent = htmlContent.replace(
             /<div class="metric-value" data-target="\d+" data-metric="i10-index">0<\/div>/,
             `<div class="metric-value" data-target="${metrics.i10Index}" data-metric="i10-index">0</div>`
@@ -93,11 +81,28 @@ async function updateCitations() {
         );
 
     } catch (error) {
-        console.error('Error updating citations:', error);
+        console.error('Error updating citations:', error.message);
         process.exit(1);
-    } finally {
-        await browser.close();
     }
+}
+
+function fetchData(url) {
+    return new Promise((resolve, reject) => {
+        https.get(url, (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                resolve(data);
+            });
+
+        }).on('error', (err) => {
+            reject(err);
+        });
+    });
 }
 
 updateCitations();

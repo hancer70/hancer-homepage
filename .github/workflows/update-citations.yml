@@ -19,13 +19,10 @@ jobs:
         with:
           node-version: '20'
           
-      - name: Install dependencies
-        run: |
-          npm install
-          npx playwright install chromium
-          
       - name: Update citations
-        run: npm run update-citations
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+        run: node update-citations.js
         
       - name: Commit and push if changed
         run: |

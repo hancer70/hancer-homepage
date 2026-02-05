@@ -85,13 +85,6 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Add hover effect to cards
-document.querySelectorAll('.highlight-card, .metric-card, .publication-card, .award-card, .link-card, .contact-card').forEach(card => {
-    card.addEventListener('mouseenter', function () {
-        this.style.transition = 'all 0.3s ease';
-    });
-});
-
 // Loading animation
 window.addEventListener('load', () => {
     document.body.style.opacity = '0';

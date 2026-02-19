@@ -2,7 +2,7 @@
 
 Personal academic homepage for Dr. Murat Hancer
 
-**Live Site:** https://hancer70.github.io/hancer-homepage (or custom domain: hancer.org)
+**Live Site:** https://hancer70.github.io/hancer-homepage (or custom domain: murathancer.com)
 
 ## Features
 
